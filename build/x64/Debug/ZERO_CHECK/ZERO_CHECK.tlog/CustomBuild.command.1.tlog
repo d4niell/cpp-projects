@@ -1,0 +1,10 @@
+^C:\USERS\DANIE\SOURCE\REPOS\PROJEKTI\BUILD\CMAKEFILES\9E5048F88089CC68AF49AB33B4ADC30B\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/danie/source/repos/projekti -BC:/Users/danie/source/repos/projekti/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/danie/source/repos/projekti/build/projekti.slnx
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

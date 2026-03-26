@@ -1,0 +1,7 @@
+C:/Users/danie/source/repos/projekti/build/CMakeFiles/projekti.dir
+C:/Users/danie/source/repos/projekti/build/CMakeFiles/rps.dir
+C:/Users/danie/source/repos/projekti/build/CMakeFiles/numGuesser.dir
+C:/Users/danie/source/repos/projekti/build/CMakeFiles/Expenses.dir
+C:/Users/danie/source/repos/projekti/build/CMakeFiles/Localhost.dir
+C:/Users/danie/source/repos/projekti/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/danie/source/repos/projekti/build/CMakeFiles/ZERO_CHECK.dir
