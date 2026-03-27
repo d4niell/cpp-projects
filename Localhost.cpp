@@ -7,11 +7,18 @@
 
 #include "httplib.h"
 
-std::string last_message = "No messages yet";
-std::mutex msg_mutex;
-std::vector<std::string> message_history;
-int totalMessages = 0;
-std::string username = "admin";
+class Client{
+    public:
+    std::string last_message = "No messages yet";
+    std::mutex msg_mutex;
+    std::vector<std::string> message_history;
+    int totalMessages = 0;
+    std::string username = "admin";
+
+
+};
+
+Client client;
 std::string escape_json(const std::string& input) {
     std::string out;
     out.reserve(input.size());
@@ -30,7 +37,7 @@ std::string escape_json(const std::string& input) {
 
 void SendToWebsite(const std::string& data) {
     httplib::Client cli("127.0.0.1", 8080);
-    auto res = cli.Post("/send", username + ": " + data, "text/plain");
+    auto res = cli.Post("/send", client.username + ": " + data, "text/plain");
 
     if (!res) {
         std::cout << "Failed to send data: no response (connection failed)\n";
@@ -53,9 +60,9 @@ int main() {
         std::string current;
         int count;
         {
-            std::lock_guard<std::mutex> lock(msg_mutex);
-            current = last_message;
-            count = totalMessages;
+            std::lock_guard<std::mutex> lock(client.msg_mutex);
+            current = client.last_message;
+            count = client.totalMessages;
         }
 
         std::string html =
@@ -89,10 +96,10 @@ int main() {
         std::string history;
         int count;
         {
-            std::lock_guard<std::mutex> lock(msg_mutex);
-            current = last_message;
-            count = totalMessages;
-            for (const auto& msg_item : message_history) {
+            std::lock_guard<std::mutex> lock(client.msg_mutex);
+            current = client.last_message;
+            count = client.totalMessages;
+            for (const auto& msg_item : client.message_history) {
                 if (!history.empty()) {
                     history += " | ";
                 }
@@ -113,10 +120,10 @@ int main() {
     svr.Post("/send", [](const httplib::Request& req, httplib::Response& res) {
         std::cout << "Received data: " << req.body << "\n";
         {
-            std::lock_guard<std::mutex> lock(msg_mutex);
-            last_message = req.body;
-            message_history.push_back(req.body);
-            totalMessages++;
+            std::lock_guard<std::mutex> lock(client.msg_mutex);
+            client.last_message = req.body;
+            client.message_history.push_back(req.body);
+            client.totalMessages++;
         }
 
         res.set_content("Data received!", "text/plain");
@@ -129,7 +136,7 @@ int main() {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
 std::cout << "Please enter your username:";
-std::cin >> username;
+std::cin >> client.username;
     while (true) {
         std::cout << "Enter message (or exit): ";
         if (!std::getline(std::cin, msg)) {
@@ -138,8 +145,11 @@ std::cin >> username;
         if (msg == "exit") {
             break;
         }
+        if (msg.length() <= 254){
+        
+            SendToWebsite(msg);
+        }
 
-        SendToWebsite(msg);
     }
 
     svr.stop();
